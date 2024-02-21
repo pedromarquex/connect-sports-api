@@ -1,6 +1,6 @@
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreatePlaceDto } from './dto/create-place.dto';
+import { CreatePlaceDto, CreateSportsOnPlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 
 @Injectable()
@@ -23,9 +23,9 @@ export class PlacesService {
     return await this.repository.place.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(name: string) {
     const place = await this.repository.place.findUnique({
-      where: { id },
+      where: { name },
     });
 
     if (!place) {
@@ -35,9 +35,9 @@ export class PlacesService {
     return place;
   }
 
-  async update(id: string, updatePlaceDto: UpdatePlaceDto, userId: string) {
+  async update(name: string, updatePlaceDto: UpdatePlaceDto, userId: string) {
     const place = await this.repository.place.findUnique({
-      where: { id },
+      where: { name },
     });
 
     if (!place) {
@@ -48,10 +48,10 @@ export class PlacesService {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    return this.repository.place.update({
-      where: { id },
+    return await this.repository.place.update({
+      where: { name },
       data: updatePlaceDto,
-    });
+    })
   }
 
   async remove(id: string, userId: string) {
@@ -73,4 +73,36 @@ export class PlacesService {
 
     return { message: 'Place deleted successfully' };
   }
+
+  async addSportOnPlace(createSportsOnPlaceDto : CreateSportsOnPlaceDto){
+    return await this.repository.sportsOnPlaces.create({
+      data: {
+        ...createSportsOnPlaceDto
+      }
+    })
+  }
+
+  async getSportOnPlaces(sportName: string){
+
+    const sports =  await this.repository.sport.findMany({
+      where : {
+        name : sportName
+      }
+    })
+
+    //todos os id de sports com mesmo nome
+    if(sports.length == 0){
+      throw new HttpException('Sport nao encontrado', HttpStatus.BAD_REQUEST);
+    }
+
+    const placesIds = []
+
+    sports.forEach(e => this.repository.sportsOnPlaces.findUnique({
+      where : {
+        sportId : e.id
+      }
+    }))
+
+    }
+
 }

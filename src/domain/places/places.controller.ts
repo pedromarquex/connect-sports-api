@@ -11,7 +11,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CreatePlaceDto } from './dto/create-place.dto';
+import { CreatePlaceDto,CreateSportsOnPlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 import { PlacesService } from './places.service';
 
@@ -28,29 +28,44 @@ export class PlacesController {
     return this.placesService.create(createPlaceDto, request['userId']);
   }
 
+  //obter todas os lugares de um sport
+  @Get(':sportName')
+  getSportOnPlaces(@Param() params :any){
+    // return this.placesService.getSportsOnPlace(params.sportName)
+  }
+
+  //obter todos os sports de um lugar
+
   @Get()
   findAll() {
     return this.placesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.placesService.findOne(id);
+  @Get(':name')
+  findOne(@Param('name') name: string) {
+    return this.placesService.findOne(name);
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id')
+  @Patch(':name')
   update(
-    @Param('id') id: string,
+    @Param('name') name: string,
     @Body() updatePlaceDto: UpdatePlaceDto,
     @Request() request: Request,
   ) {
-    return this.placesService.update(id, updatePlaceDto, request['userId']);
+    return this.placesService.update(name, updatePlaceDto, request['userId']); //atualizar um place com um nome ja existente gera error
   }
 
   @UseGuards(AuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string, @Request() request: Request) {
-    return this.placesService.remove(id, request['userId']);
+  @Delete(':name')
+  remove(@Param('name') name: string, @Request() request: Request) {
+    return this.placesService.remove(name, request['userId']);
   }
+  
+
+  @Post('addSport')
+  addSportOnPlace(@Body() createSportsOnPlaceDto :CreateSportsOnPlaceDto){
+    return this.placesService.addSportOnPlace(createSportsOnPlaceDto)
+  }
+
 }
