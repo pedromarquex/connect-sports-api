@@ -12,28 +12,66 @@ datasource db {
 
 model Place {
   id        String  @id @default(uuid())
-  name      String
-  latitude  Float
-  longitude Float
+  name      String @unique
   description String
   state     String
   city      String
+
+  neighborhood String?
+  street String?
+  number Int?
+
+  statusActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   userId    String
   user      User    @relation(fields: [userId], references: [id])
+
+  sports    Sport[]
 }
 
 model User {
   id        String  @id @default(uuid())
   name      String
   email     String  @unique
+
   password  String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   active   Boolean @default(true)
 
   places    Place[]
+}
+
+model Sport {
+  id        String @id @default(uuid())
+  name      String 
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  statusActive Boolean @default(true)
+
+  places Place[]
+}
+
+model SportsOnUsers {
+  userId String 
+  sportId String 
+  assingnedAt DateTime @default(now())
+  statusActive Boolean @default(true)
+
+  @@id([userId, sportId])
+}
+
+model SportsOnPlaces {
+  placeId String 
+  sportId String @unique
+  assingnedAt DateTime @default(now())
+  statusActive Boolean @default(true)
+
+  @@id([placeId, sportId])
 }

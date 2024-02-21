@@ -25,3 +25,7 @@
 - [ ] docker
 - [ ] CI/CD
 - [ ] deploy
+
+
+
+"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

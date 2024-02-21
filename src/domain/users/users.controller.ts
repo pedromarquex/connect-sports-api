@@ -19,7 +19,13 @@ import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
+  
+  @UseGuards(AuthGuard)
+  @Get('all')
+  all(@Request() request: Request) {
+    return this.usersService.all();
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -39,12 +45,13 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id')
+  @Patch('/:id')
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @Request() request: Request,
   ) {
+    console.log('Em patch users')
     return this.usersService.updateUser(id, updateUserDto, request['userId']);
   }
 

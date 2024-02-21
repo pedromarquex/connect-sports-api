@@ -62,6 +62,8 @@ export class UsersService {
       );
     }
 
+    console.log('userID em login',userExists.id)
+
     userExists.password = undefined;
 
     const payload = { userId: userExists.id };
@@ -87,6 +89,12 @@ export class UsersService {
     return {
       user,
     };
+  }
+
+  async all() {
+    const users = await this.repository.user.findMany();
+
+    return users;
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto, userId: string) {
